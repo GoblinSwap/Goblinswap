@@ -93,6 +93,7 @@ public class GoblinSwap implements Contract {
         BigInteger token_reserve = getTokenBalance(Msg.address());
         BigInteger nuls_sold = getOutputPrice(tokens_bought, Msg.address().balance().subtract(max_nuls), token_reserve);
         BigInteger nuls_refund = max_nuls.subtract(nuls_sold);
+        require(nuls_refund.compareTo(BigInteger.ZERO)>=0);
         if (nuls_refund.compareTo(BigInteger.ZERO) > 0) {
             buyer.transfer(nuls_refund);
         }
@@ -283,6 +284,13 @@ public class GoblinSwap implements Contract {
     @View
     public BigInteger getTotalSupply() {
         return _totalSupply;
+    }
+
+    @View
+    public BigInteger getLiquidityTokenAmount(BigInteger nulsAmount){
+        BigInteger nuls_reserve = Msg.address().balance();
+        BigInteger token_reserve = getTokenBalance(Msg.address());
+        return (nulsAmount.multiply(token_reserve).divide(nuls_reserve)).add(BigInteger.ONE);
     }
 
     @View
